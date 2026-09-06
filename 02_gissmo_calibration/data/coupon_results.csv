@@ -1,0 +1,28 @@
+# GISSMO calibration input.
+#
+# One row per (coupon, element size). Fill triaxiality and failure
+# plastic strain by reading the critical element of each simulation at
+# the extensometer displacement measured at fracture on the test rig.
+#
+# source = sim  -> read from the LS-DYNA run
+# source = test -> taken directly from DIC / test evaluation
+#
+# The values below are REPRESENTATIVE PLACEHOLDERS for a DP600-class
+# steel so the pipeline runs end to end out of the box. Replace them
+# with your own before quoting any result.
+specimen,element_size_mm,triaxiality,failure_plastic_strain,source
+shear,0.5,0.010,0.735,sim
+tensile,0.5,0.345,0.482,sim
+notchR20,0.5,0.412,0.416,sim
+notchR10,0.5,0.487,0.372,sim
+planestrain,0.5,0.574,0.341,sim
+shear,1.0,0.012,0.618,sim
+tensile,1.0,0.348,0.405,sim
+notchR20,1.0,0.415,0.351,sim
+notchR10,1.0,0.491,0.313,sim
+planestrain,1.0,0.578,0.288,sim
+shear,2.0,0.014,0.512,sim
+tensile,2.0,0.352,0.338,sim
+notchR20,2.0,0.419,0.294,sim
+notchR10,2.0,0.495,0.262,sim
+planestrain,2.0,0.581,0.242,sim

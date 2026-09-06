@@ -1,0 +1,6 @@
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.6
+
+# optional: reads binout directly instead of going through l2a
+# lasso-python>=2.0

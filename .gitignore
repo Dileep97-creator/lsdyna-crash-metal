@@ -1,0 +1,37 @@
+# solver output - never commit these, they are large and regenerable
+d3plot*
+d3hsp
+d3dump*
+d3full*
+binout*
+dynain
+runrsf*
+*.log
+messag
+status.out
+bg_switch
+kill_by_pelib
+glstat
+matsum
+rcforc
+nodout
+elout
+secforc
+spcforc
+rwforc
+bndout
+swforc
+sleout
+
+# solver run directories
+runs/
+
+# Calibration outputs ARE committed on purpose: they are cheap to
+# regenerate, they are what a reviewer looks at first, and the READMEs
+# link to them.
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/

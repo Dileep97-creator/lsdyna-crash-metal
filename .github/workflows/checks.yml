@@ -1,0 +1,25 @@
+name: model checks
+
+# Regenerating every model and re-running the static checks on each push
+# is the cheapest possible guard against a deck that no longer builds.
+on: [push, pull_request]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: generate all models
+        run: make build
+      - name: keyword syntax and cross-reference checks
+        run: python3 tools/validate_k.py 0*/models/*.k
+      - name: mesh quality checks
+        run: |
+          python3 tools/mesh_quality.py 0*/models/*.k | tee quality.txt
+          ! grep -q "status              [^O]" quality.txt
+      - name: calibration workflows
+        run: make calibrate

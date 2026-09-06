@@ -1,0 +1,11 @@
+# Peak force at weld failure for each load angle.
+# 0 deg = pure shear (lap shear), 90 deg = pure normal (cross tension).
+#
+# REPRESENTATIVE PLACEHOLDER VALUES for a 5 mm nugget in 1.5 mm DP600.
+# Replace with your own test or swforc results before quoting anything.
+angle_deg,peak_force_kn,source
+0,14.80,test
+30,12.95,test
+45,11.40,test
+60,9.85,test
+90,8.30,test

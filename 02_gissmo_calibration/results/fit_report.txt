@@ -1,0 +1,21 @@
+GISSMO calibration report - DP600
+====================================================
+input                data/coupon_results.csv
+coupons at h=1 mm  shear, tensile, notchR20, notchR10, planestrain
+fit method           scipy.curve_fit
+locus                eps_f = 0.0200 + 0.6105*exp(-1.4345*eta)
+RMS error            0.0081 plastic strain
+worst point error    3.6 %
+
+failure strain at the standard stress states
+  pure shear           eta= 0.000   eps_f=0.630
+  uniaxial tension     eta= 0.333   eps_f=0.398
+  plane strain         eta= 0.577   eps_f=0.287
+  equibiaxial          eta= 0.667   eps_f=0.255
+
+mesh regularisation  ratio = 0.997 * (h/1)^-0.253
+  at h=5 mm the failure strain scales by 0.663
+  -> a locus fitted on the coupon mesh and used unscaled on the
+     crash mesh would over-predict ductility by 51 %
+
+material card written to results/gissmo_dp600.k

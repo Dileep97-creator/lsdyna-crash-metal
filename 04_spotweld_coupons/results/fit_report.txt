@@ -1,0 +1,26 @@
+Spot weld failure envelope calibration
+====================================================
+input            data/weld_tests.csv
+fit method       scipy.least_squares
+NRR (normal)     8.5641 kN
+NRS (shear)      14.7732 kN
+NF  (exponent)   2.637
+NRS/NRR ratio    1.725
+
+  angle   test kN    fit kN   error %  source
+    0.0    14.800    14.774      -0.2  test
+   30.0    12.950    13.142       1.5  test
+   45.0    11.400    11.170      -2.0  test
+   60.0     9.850     9.687      -1.7  test
+   90.0     8.300     8.566       3.2  test
+
+nominal nugget area 19.63 mm2
+normal strength     436 MPa
+shear strength      752 MPa
+
+If NF comes out near 2 the envelope is close to elliptical. Values
+well above 2 mean the weld keeps most of its strength under mixed
+loading; values below 2 mean mixed modes are more damaging than an
+elliptical assumption predicts.
+
+card written to results/mat100_spotweld.k
