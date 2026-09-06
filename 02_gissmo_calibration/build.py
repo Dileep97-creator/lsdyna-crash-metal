@@ -100,7 +100,7 @@ def coupon_plane_strain(m: Mesh, h: float):
     """Wide specimen with a shallow groove - lateral contraction is
     suppressed by the surrounding material, so the ligament sits close to
     the plane strain triaxiality of 1/sqrt(3)."""
-    L, wg, wmin, r = 100.0, 60.0, 50.0, 20.0
+    L, wg, wmin, r = 90.0, 40.0, 32.0, 20.0
     profiled_strip(m, PID, L,
                    lambda x: notched_halfwidth(x, wg, wmin, r),
                    h=h, ny=max(8, int(wmin / h)))
