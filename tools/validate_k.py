@@ -20,6 +20,50 @@ from collections import defaultdict
 
 FREE_FORMAT = ("*NODE", "*ELEMENT", "*SET", "*DEFINE_CURVE")
 
+# Minimum number of data cards each keyword must be followed by.
+#
+# This table exists because of a specific failure: *CONTROL_CONTACT takes
+# two mandatory cards, only one was written, and the reader silently
+# consumed the *CONTROL_ACCURACY line that followed as if it were data.
+# The error it then reported pointed at *CONTROL_ACCURACY, which was
+# perfectly correct. A missing card never announces itself - it corrupts
+# whatever comes next.
+#
+# Only keywords with a fixed card count are listed. A _TITLE or _ID suffix
+# adds one line, which is accounted for automatically.
+REQUIRED_CARDS = {
+    "*CONTROL_TERMINATION": 1, "*CONTROL_TIMESTEP": 1,
+    "*CONTROL_ENERGY": 1, "*CONTROL_HOURGLASS": 1,
+    "*CONTROL_SHELL": 1, "*CONTROL_CONTACT": 2,
+    "*CONTROL_ACCURACY": 1, "*CONTROL_IMPLICIT_GENERAL": 1,
+    "*CONTROL_IMPLICIT_AUTO": 1, "*CONTROL_IMPLICIT_SOLVER": 1,
+    "*DATABASE_EXTENT_BINARY": 2,
+    "*SECTION_SHELL": 2, "*SECTION_BEAM": 2, "*SECTION_SOLID": 1,
+    "*PART": 2,
+    "*HOURGLASS": 1,
+    "*MAT_PIECEWISE_LINEAR_PLASTICITY": 4,
+    "*MAT_RIGID": 3,
+    "*MAT_3-PARAMETER_BARLAT": 5,
+    "*MAT_SPOTWELD": 2,
+    "*MAT_ADD_EROSION": 2,
+    "*INITIAL_VELOCITY_GENERATION": 2,
+    "*BOUNDARY_PRESCRIBED_MOTION_SET": 1,
+    "*BOUNDARY_PRESCRIBED_MOTION_RIGID": 1,
+    "*DEFINE_VECTOR": 1,
+    "*LOAD_RIGID_BODY": 1,
+}
+
+
+def required_cards(kw):
+    """Minimum data lines for a keyword, allowing for _TITLE / _ID."""
+    base, extra = kw, 0
+    for suffix in ("_TITLE", "_ID"):
+        if base.endswith(suffix):
+            base, extra = base[: -len(suffix)], extra + 1
+    n = REQUIRED_CARDS.get(base)
+    return None if n is None else n + extra
+
+
 # keyword -> (field index of its own id on card 1)
 ID_ON_CARD1 = {
     "*PART": 0, "*SECTION_SHELL": 0, "*SECTION_SOLID": 0,
@@ -68,7 +112,17 @@ def check(path, includes=frozenset()):
         lines = fh.read().split("\n")
 
     kw = None
+    kw_line = 0
+    kw_data = 0
     counts = defaultdict(int)
+    def close_block():
+        need = required_cards(kw) if kw else None
+        if need is not None and kw_data < need:
+            rep.err(kw_line,
+                    f"{kw} has {kw_data} data card(s), needs {need} - a short "
+                    "keyword block makes the reader consume the next keyword "
+                    "line as data")
+
     declared = defaultdict(set)     # kind -> ids defined
     referenced = defaultdict(set)   # kind -> ids used
     node_ids, elem_ids = set(), set()
@@ -81,11 +135,14 @@ def check(path, includes=frozenset()):
         if line.startswith("$"):
             continue
         if line.startswith("*"):
+            close_block()
             kw = line.strip().upper()
+            kw_line, kw_data = n, 0
             counts[kw.split("_")[0]] += 1
             if kw == "*END":
                 has_end = True
             continue
+        kw_data += 1
         if kw is None:
             rep.err(n, "data line before any keyword")
             continue
@@ -131,6 +188,8 @@ def check(path, includes=frozenset()):
             f = fields(line)
             if f and f[0].strip().isdigit():
                 declared["curve"].add(int(f[0]))
+
+    close_block()
 
     # ---- cross references
     for kind in ("part", "section", "material"):

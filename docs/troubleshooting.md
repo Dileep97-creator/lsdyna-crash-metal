@@ -44,6 +44,38 @@ in the message rather than the element numbers. "0 materials defined" or
 look is the last thing it read successfully, not the first thing it
 complained about.
 
+## An error that blames the keyword *after* the broken one
+
+```
+*** Error 10246 (KEY+246)
+    line contains improperly formatted data
+     reading *CONTROL_CONTACT
+         At line# 25
+--------------------------------------------------------------------------
+*CONTROL_ACCURACY
+--------------------------------------------------------------------------
+
+*** Error 10450 (KEY+450)
+    in keyword command:
+        1         4         0         1
+```
+
+Read it carefully: the reader is *inside* `*CONTROL_CONTACT` and the line
+it choked on is `*CONTROL_ACCURACY`. Nothing is wrong with
+`*CONTROL_ACCURACY`. `*CONTROL_CONTACT` takes two mandatory cards, only
+one was supplied, so the reader went looking for the second one and
+swallowed the next keyword line as data. Having lost its place, it then
+treated the following data card as a keyword command, which produced the
+second error.
+
+A missing card never announces itself. It corrupts whatever comes next,
+and the error you get names the innocent party. Whenever an error says
+"reading *X" but quotes a line belonging to *Y, the fault is in *X's card
+count.
+
+`tools/validate_k.py` now carries a table of mandatory card counts for
+every keyword this repository emits and fails any block that is short.
+
 ## Two numeric fields with no space between them
 
 ```
@@ -62,12 +94,15 @@ there is always a separator.
 In order, because each is cheaper than the one after it:
 
 1. `python3 tools/validate_k.py <deck> <its includes>` - field overflow,
-   duplicate IDs, dangling references, include-file violations.
+   duplicate IDs, dangling references, short keyword blocks, include-file
+   violations.
 2. The **first** error in `messag`, not the last, and the counts inside
    the message rather than the entity numbers.
-3. `d3hsp` - the echo of what the solver actually parsed. If a part,
-   section or material is missing there, it was never read, and the
-   question is what stopped the reader.
+3. `d3hsp` - the echo of what the solver actually parsed. The keyword
+   count list near the top is the fastest check there is: if
+   `*MAT_option`, `*SECTION_option` or `*PART_option card` reads zero,
+   the reader stopped before reaching them, and the question is what
+   stopped it rather than what it complained about.
 4. `python3 tools/mesh_quality.py <mesh>` - degenerate elements and the
    critical timestep, if the run started and then collapsed rather than
    failing to initialise.

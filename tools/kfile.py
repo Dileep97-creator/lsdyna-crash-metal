@@ -196,9 +196,14 @@ def control_explicit_crash(endtim: float, dt2ms: float = -1.0e-6,
     d.kw("CONTROL_SHELL",
          (("wrpang", "esort", "irnxx", "istupd", "theory", "bwc", "miter", "proj"),
           (20.0, 1, -1, 1, 2, 2, 1, 0)))
+    # *CONTROL_CONTACT takes TWO mandatory cards. Omitting the second one
+    # does not raise "missing card" - the reader swallows the next keyword
+    # line as data, then desynchronises and blames whatever follows.
     d.kw("CONTROL_CONTACT",
          (("slsfac", "rwpnal", "islchk", "shlthk", "penopt", "thkchg", "orien", "enmass"),
-          (0.1, 0.0, 2, 1, 4, 1, 1, 0)))
+          (0.1, 0.0, 2, 1, 4, 1, 1, 0)),
+         (("usrstr", "usrfrc", "nsbcs", "interm", "xpene", "ssthk", "ecdt", "tiedprj"),
+          (0, 0, 0, 0, 4.0, 0, 0, 0)))
     d.kw("CONTROL_ACCURACY",
          (("osu", "inn", "pidosu", "iacc"), (1, 4, 0, 1)))
     return d.lines

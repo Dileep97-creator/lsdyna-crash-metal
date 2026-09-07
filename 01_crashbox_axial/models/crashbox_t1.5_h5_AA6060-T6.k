@@ -22,6 +22,8 @@ $#  wrpang     esort     irnxx    istupd    theory       bwc     miter      proj
 *CONTROL_CONTACT
 $#  slsfac    rwpnal    islchk    shlthk    penopt    thkchg     orien    enmass
        0.1       0.0         2         1         4         1         1         0
+$#  usrstr    usrfrc     nsbcs    interm     xpene     ssthk      ecdt   tiedprj
+         0         0         0         0       4.0         0         0         0
 *CONTROL_ACCURACY
 $#     osu       inn    pidosu      iacc
          1         4         0         1
