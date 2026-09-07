@@ -1,12 +1,12 @@
 *KEYWORD
 *TITLE
-crash box DP600 t=1.2mm h=5mm 500kg @ 15m/s
+crash box DP600 t=1.2mm h=5mm 100kg @ 12m/s
 $ units: mm / ms / kg / kN / GPa   (energy in kN-mm = J)
 $ element size 5 mm, wall thickness 1.2 mm, material DP600
 $ acceptance: hourglass < 5% and added mass < 5% of the model mass
 *CONTROL_TERMINATION
 $#  endtim    endcyc     dtmin    endeng    endmas     nosol
-      25.0         0       0.0       0.0       0.0         0
+      30.0         0       0.0       0.0      10.0         0
 *CONTROL_TIMESTEP
 $#  dtinit    tssfac      isdo    tslimt     dt2ms      lctm     erode     ms1st
        0.0       0.9         0       0.0   -0.0008         0         1         0
@@ -86,7 +86,7 @@ impactor plate
 $#   secid    elform      shrf       nip     propt   qr/irid     icomp     setyp
          2         2    0.8333         2       1.0       0.0         0         1
 $#      t1        t2        t3        t4
-       5.0       5.0       5.0       5.0
+       2.0       2.0       2.0       2.0
 *HOURGLASS
 $#    hgid       ihq        qm       ibq        q1        q2    qb/vdc        qw
          1         4      0.05         0       1.5      0.06       0.0       0.0
@@ -148,7 +148,7 @@ $#     es1       es2       es3       es4       es5       es6       es7       es8
 *MAT_RIGID_TITLE
 impactor
 $#     mid        ro         e        pr         n    couple         m     alias
-         2 0.0069444     210.0       0.3       0.0       0.0       0.0       0.0
+         2 0.0034722     210.0       0.3       0.0       0.0       0.0       0.0
 $#     cmo      con1      con2
        1.0         4         7
 $#  lco/a1        a2        a3        v1        v2        v3
@@ -158,7 +158,7 @@ $#    nsid       cid      dofx      dofy      dofz     dofrx     dofry     dofrz
         10         0         1         1         1         1         1         1
 *INITIAL_VELOCITY_GENERATION
 $#      id      styp     omega        vx        vy        vz     ivatn      icid
-         2         2       0.0       0.0       0.0     -15.0         0         0
+         2         2       0.0       0.0       0.0     -12.0         0         0
 $#      xc        yc        zc        nx        ny        nz     phase    irigid
        0.0       0.0       0.0       0.0       0.0       0.0         0         0
 *SET_PART_LIST

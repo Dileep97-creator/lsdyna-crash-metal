@@ -76,6 +76,50 @@ count.
 `tools/validate_k.py` now carries a table of mandatory card counts for
 every keyword this repository emits and fails any block that is short.
 
+## Added mass flat for the whole run, then vertical
+
+```
+time = 1.9750E+01   percentage increase = 9.9208E-02
+time = 1.9799E+01   percentage increase = 1.8526E-01
+time = 1.9849E+01   percentage increase = 5.5674E-01
+time = 1.9899E+01   percentage increase = 2.1451E+01
+```
+
+Mass scaling was adding a tenth of a percent for twenty milliseconds and
+then added twenty percent in a tenth of one. That shape is not a mass
+scaling problem, it is the symptom of the model destroying itself: a
+crash box that has flattened and is now squeezing folded material between
+the impactor and the base, elements going to near-zero characteristic
+length, timestep collapsing, mass scaling doing what it was asked to do.
+
+The fix is upstream, in the load case. Size the impactor energy against
+what the structure can actually absorb before running it. For a
+thin-walled tube the Wierzbicki-Abramowicz mean crush force estimate
+takes thirty seconds and tells you the capacity within about twenty
+percent, which is easily enough to pick an impactor mass and velocity.
+
+Set `ENDMAS` on `*CONTROL_TERMINATION` regardless. A run that starts
+adding mass fast will not recover, and every cycle after that point
+produces numbers nobody can use.
+
+## Initial penetration in a contact you thought had a gap
+
+```
+*** Warning 40565 (SOL+565)
+    contact interface # = 2
+    penetration         = -2.1000E+00
+```
+
+Contact acts on shell **surfaces**, not mid-surfaces. A 2 mm gap between
+two mid-surfaces is not a gap at all if one part is a 5 mm plate and the
+other a 1.2 mm sheet: 2.5 + 0.6 = 3.1 mm of contact thickness against a
+1 mm standoff gives exactly the 2.1 mm reported.
+
+The solver resolves it by moving the penetrating nodes, so the part is
+deformed before the first cycle. Compute the standoff from the actual
+thicknesses rather than picking a round number, and assert it at build
+time.
+
 ## Two numeric fields with no space between them
 
 ```

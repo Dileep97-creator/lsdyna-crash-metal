@@ -51,10 +51,27 @@ TRIGGER_A = 0.6         # mm, bead depth (inward)
 TRIGGER_L = 15.0        # mm, bead half-length
 
 # ---------------------------------------------------------------- load case
-IMPACT_MASS = 500.0     # kg
-IMPACT_V = 15.0         # mm/ms == m/s
-END_TIME = 25.0         # ms
-GAP = 1.0               # mm standoff so contact initialises cleanly
+#
+# The impactor is sized against what the tube can actually absorb. For an
+# 80 mm square DP600 tube the mean crush force from the Wierzbicki-
+# Abramowicz relation is roughly
+#
+#     P_m = 13.06 * sigma_0 * t^(5/3) * c^(1/3)
+#
+# which gives about 55 kN at t = 1.5 mm. Over an effective crush length of
+# 0.7 * 300 mm that is close to 11.5 kJ of capacity, and the thinnest
+# variant in the matrix manages about 8 kJ.
+#
+# The kinetic energy below is 7.2 kJ, deliberately under the weakest
+# variant's capacity. Oversizing it is not a conservative choice: the tube
+# flattens, the folded material is squeezed between the impactor and the
+# base, the timestep collapses, and mass scaling adds tens of percent in a
+# fraction of a millisecond. Everything after that point is fiction.
+IMPACT_MASS = 100.0     # kg
+IMPACT_V = 12.0         # mm/ms == m/s   -> 7.2 kJ
+END_TIME = 30.0         # ms
+PLATE_T = 2.0           # mm, impactor plate shell thickness
+GAP = 4.0               # mm standoff, must clear both contact thicknesses
 
 # ---------------------------------------------------------------- ids
 PID_TUBE, PID_IMP = 1, 2
@@ -130,8 +147,18 @@ def write_case(h: float, t: float, grade: str, damage: bool) -> str:
 
     # rigid plate density chosen to give exactly IMPACT_MASS
     a = 0.75 * SECTION_W
-    t_plate = 5.0
+    t_plate = PLATE_T
     rho_imp = IMPACT_MASS / ((2 * a) ** 2 * t_plate)
+
+    # Contact acts on the shell surfaces, not the mid-surfaces, so the
+    # standoff has to clear half of each shell thickness. Get this wrong
+    # and the solver reports initial penetration and pushes the tube's top
+    # ring down to resolve it, deforming the part before the run starts.
+    clearance = GAP - 0.5 * t_plate - 0.5 * t
+    assert clearance > 0.5, (
+        f"standoff {GAP:g} mm is too small for a {t_plate:g} mm plate over a "
+        f"{t:g} mm tube - contact surfaces overlap by "
+        f"{-clearance + 0.5:.2f} mm")
 
     d = Deck(f"crash box {grade} t={t:g}mm h={h:g}mm "
              f"{IMPACT_MASS:g}kg @ {IMPACT_V:g}m/s")
@@ -244,7 +271,10 @@ MATRIX = [
     (5.0, 1.2, "DP600", False),     # thickness sweep
     (5.0, 1.8, "DP600", False),     # thickness sweep
     (5.0, 1.5, "HC340LA", False),   # material comparison
-    (5.0, 1.5, "AA6060-T6", False),  # material comparison
+    # aluminium at the thickness that gives a comparable crush force to
+    # the 1.5 mm steel, which is the comparison an engineer actually
+    # makes: equal performance, then compare mass
+    (5.0, 2.5, "AA6060-T6", False),
     (5.0, 1.5, "DP600", True),      # with GISSMO damage and erosion
 ]
 

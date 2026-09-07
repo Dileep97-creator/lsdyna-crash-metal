@@ -8,7 +8,7 @@ $ pull one end at a ramped rate; take force from bndout/spcforc and
 $ extensometer displacement from the two nodout node sets.
 *CONTROL_TERMINATION
 $#  endtim    endcyc     dtmin    endeng    endmas     nosol
-       8.0         0       0.0       0.0       0.0         0
+       8.0         0       0.0       0.0      10.0         0
 *CONTROL_TIMESTEP
 $#  dtinit    tssfac      isdo    tslimt     dt2ms      lctm     erode     ms1st
        0.0       0.9         0       0.0   -0.0002         0         1         0

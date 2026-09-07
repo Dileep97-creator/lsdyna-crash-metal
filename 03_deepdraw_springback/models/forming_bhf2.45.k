@@ -8,7 +8,7 @@ $ draw depth 70 mm, blankholder force 2.45 kN
 $ writes dynain at termination for the implicit springback run
 *CONTROL_TERMINATION
 $#  endtim    endcyc     dtmin    endeng    endmas     nosol
-      17.0         0       0.0       0.0       0.0         0
+      17.0         0       0.0       0.0      10.0         0
 *CONTROL_TIMESTEP
 $#  dtinit    tssfac      isdo    tslimt     dt2ms      lctm     erode     ms1st
        0.0       0.9         0       0.0   -0.0003         0         1         0

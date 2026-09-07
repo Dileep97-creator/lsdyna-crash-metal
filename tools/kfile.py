@@ -179,12 +179,17 @@ class Deck:
 # ---------------------------------------------------------------------
 
 def control_explicit_crash(endtim: float, dt2ms: float = -1.0e-6,
-                           tssfac: float = 0.9) -> list[str]:
+                           tssfac: float = 0.9,
+                           endmas: float = 10.0) -> list[str]:
     d = Deck()
     d.lines = []
+    # ENDMAS stops the run once mass scaling has added more than endmas
+    # percent. A model that starts adding mass fast is destroying itself -
+    # elements collapsing, a part bottoming out - and every cycle after
+    # that point is wasted queue time producing a result nobody can use.
     d.kw("CONTROL_TERMINATION",
          (("endtim", "endcyc", "dtmin", "endeng", "endmas", "nosol"),
-          (endtim, 0, 0.0, 0.0, 0.0, 0)))
+          (endtim, 0, 0.0, 0.0, endmas, 0)))
     d.kw("CONTROL_TIMESTEP",
          (("dtinit", "tssfac", "isdo", "tslimt", "dt2ms", "lctm", "erode", "ms1st"),
           (0.0, tssfac, 0, 0.0, dt2ms, 0, 1, 0)))
