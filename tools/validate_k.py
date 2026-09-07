@@ -13,6 +13,7 @@ part IDs across included files.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from collections import defaultdict
@@ -44,7 +45,24 @@ class Report:
         self.warnings.append(f"{self.path}:{ln}: WARN  {msg}")
 
 
-def check(path):
+def include_targets(paths):
+    """Every file pulled in with *INCLUDE by any of the decks given."""
+    targets, kw = set(), None
+    for p in paths:
+        for raw in open(p, errors="ignore"):
+            line = raw.rstrip("\n")
+            if line.startswith("$") or not line.strip():
+                continue
+            if line.startswith("*"):
+                kw = line.strip().upper()
+                continue
+            if kw == "*INCLUDE":
+                targets.add(os.path.basename(line.strip()))
+                kw = None
+    return targets
+
+
+def check(path, includes=frozenset()):
     rep = Report(path)
     with open(path) as fh:
         lines = fh.read().split("\n")
@@ -122,9 +140,20 @@ def check(path):
         for mid in sorted(missing):
             rep.warn(0, f"{kind} {mid} referenced but not defined in this file")
 
-    if not has_end:
+    if not has_end and os.path.basename(path) not in includes:
         rep.err(len(lines), "deck has no *END")
-    if not counts.get("*KEYWORD"):
+    if os.path.basename(path) in includes:
+        # An *END inside an included file terminates input reading, so
+        # everything after the *INCLUDE in the parent deck is dropped in
+        # silence. The solver then blames the elements, which is nowhere
+        # near the cause. Same for a second *KEYWORD.
+        if has_end:
+            rep.err(0, "this file is pulled in with *INCLUDE and contains "
+                       "*END - it will truncate the parent deck")
+        if counts.get("*KEYWORD"):
+            rep.err(0, "this file is pulled in with *INCLUDE and contains "
+                       "*KEYWORD - remove it")
+    elif not counts.get("*KEYWORD"):
         rep.err(1, "deck does not start with *KEYWORD")
 
     rep.info.append(
@@ -139,9 +168,10 @@ def main(argv):
     if not paths:
         print(__doc__)
         return 2
+    incl = include_targets(paths)
     bad = 0
     for p in paths:
-        rep = check(p)
+        rep = check(p, incl)
         status = "FAIL" if rep.errors else ("warn" if rep.warnings else "ok")
         print(f"[{status:4}] {p}  ({rep.info[0]})")
         for m in rep.errors + rep.warnings:

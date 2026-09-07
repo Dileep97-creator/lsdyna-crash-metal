@@ -33,7 +33,8 @@ card layout. If a card changes between solver releases it is fixed in one
 place rather than in every model file.
 
 **Quality is checked before the solver, not after.** `tools/validate_k.py`
-catches field overflow, duplicate IDs and dangling references.
+catches field overflow, duplicate IDs, dangling references, and include
+files that would truncate their parent deck.
 `tools/mesh_quality.py` reports aspect ratio, corner angle, warpage and
 the critical timestep of the worst element. Both run in CI on every
 commit.
@@ -116,6 +117,8 @@ docs/                 verification checklist, modelling notes
   be true before a result is reported
 - [Modelling notes](docs/modelling_notes.md) - why each modelling choice
   was made, and where it stops being appropriate
+- [Troubleshooting](docs/troubleshooting.md) - solver errors that point
+  somewhere other than the actual cause
 - [Talking about this work](docs/cv_bullets.md) - the questions this
   material should let you answer
 

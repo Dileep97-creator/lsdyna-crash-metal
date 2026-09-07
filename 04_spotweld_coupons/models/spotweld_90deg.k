@@ -2705,7 +2705,7 @@ $#    nsid       cid      dofx      dofy      dofz     dofrx     dofry     dofrz
         10         0         1         1         1         1         1         1
 *DEFINE_VECTOR
 $#     vid        xt        yt        zt        xh        yh        zh       cid
-         1       0.0       0.0       0.06.1232e-17       0.0       1.0         0
+         1       0.0       0.0       0.0 6.123e-17       0.0       1.0         0
 *BOUNDARY_PRESCRIBED_MOTION_SET
 $#      id       dof       vad      lcid        sf       vid     death     birth
         11         4         0       200       1.0         1    1.0e20       0.0

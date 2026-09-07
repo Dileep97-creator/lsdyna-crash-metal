@@ -10,5 +10,5 @@ spot weld nugget, calibrated resultant failure
 $#     mid        ro         e        pr      sigy        et        dt     tfail
          3   7.85e-6     210.0       0.3       0.8       0.0       0.0       0.0
 $#   efail       nrr       nrs       nrt       mrr       mss       mtt        nf
-       0.08.5640614214.7731616       0.0       0.0       0.0       0.02.63689066
+       0.0 8.5640614 14.773162       0.0       0.0       0.0       0.0 2.6368907
 *END

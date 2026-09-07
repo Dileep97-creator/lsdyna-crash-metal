@@ -37,8 +37,6 @@ $#      dt    binary
 *DATABASE_NODOUT
 $#      dt    binary
       0.05         3
-*INCLUDE
-dynain
 *PART
 blank DC04
 $#     pid     secid       mid     eosid      hgid      grav    adpopt      tmid
@@ -122,4 +120,6 @@ $#    psid      nshv     ftype    ftensr    nthhsv     rflag   intstrn      optc
 *SET_PART_LIST
         10       0.0       0.0       0.0       0.0
          1
+*INCLUDE
+dynain
 *END

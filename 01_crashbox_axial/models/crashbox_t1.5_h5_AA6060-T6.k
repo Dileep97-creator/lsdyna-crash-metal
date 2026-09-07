@@ -65,8 +65,6 @@ $#  cmpflg    ieverp    beamip     dcomp      shge     stssz    n3thdt   ialemat
          0         1         0         1         2         3         2         1
 *DATABASE_HISTORY_NODE_SET
         11
-*INCLUDE
-mesh_h5.k
 *PART
 crash box AA6060-T6 t=1.5
 $#     pid     secid       mid     eosid      hgid      grav    adpopt      tmid
@@ -148,7 +146,7 @@ $#     es1       es2       es3       es4       es5       es6       es7       es8
 *MAT_RIGID_TITLE
 impactor
 $#     mid        ro         e        pr         n    couple         m     alias
-         20.00694444     210.0       0.3       0.0       0.0       0.0       0.0
+         2 0.0069444     210.0       0.3       0.0       0.0       0.0       0.0
 $#     cmo      con1      con2
        1.0         4         7
 $#  lco/a1        a2        a3        v1        v2        v3
@@ -187,4 +185,6 @@ $#     sfs       sfm       sst       mst      sfst      sfmt       fsf       vsf
        1.0       1.0       0.0       0.0       1.0       1.0       1.0       1.0
 $#    soft    sofscl    lcidab    maxpar     sbopt     depth     bsort    frcfrq
          1       0.1         0     1.025       2.0         2         0         1
+*INCLUDE
+mesh_h5.k
 *END

@@ -50,7 +50,10 @@ def fmt(v, w: int = W) -> str:
     if isinstance(v, int):
         s = str(v)
     elif isinstance(v, float):
-        s = _fmt_float(v, w)
+        # one column is reserved as a separator: a float that fills the field
+        # exactly runs into the number before it, which is still legal fixed
+        # format but unreadable and impossible to debug by eye
+        s = _fmt_float(v, w - 1)
     else:
         s = str(v)
     if len(s) > w:
@@ -80,10 +83,25 @@ def comment(*names) -> str:
 class Deck:
     """Accumulates keyword blocks and writes a .k file."""
 
-    def __init__(self, title: str = ""):
-        self.lines: list[str] = ["*KEYWORD"]
-        if title:
-            self.lines += ["*TITLE", title[:80]]
+    def __init__(self, title: str = "", include: bool = False):
+        """include=True writes a file meant to be pulled in with *INCLUDE.
+
+        Such a file must not carry *KEYWORD or *END. An *END inside an
+        included file terminates input reading, and everything after the
+        *INCLUDE in the parent deck is silently dropped - no sections, no
+        materials, no contacts. The solver then reports thousands of
+        "invalid material" errors on elements that were read perfectly
+        well, which points nowhere near the actual cause.
+        """
+        self.include_file = include
+        self.lines: list[str] = []
+        if include:
+            if title:
+                self.lines.append("$ " + title[:78])
+        else:
+            self.lines.append("*KEYWORD")
+            if title:
+                self.lines += ["*TITLE", title[:80]]
 
     # -- low level -------------------------------------------------------
     def raw(self, *lines: str) -> "Deck":
@@ -142,11 +160,12 @@ class Deck:
         return self
 
     def end(self) -> "Deck":
-        self.lines.append("*END")
+        if not self.include_file:
+            self.lines.append("*END")
         return self
 
     def write(self, path) -> str:
-        if self.lines[-1] != "*END":
+        if not self.include_file and (not self.lines or self.lines[-1] != "*END"):
             self.end()
         text = "\n".join(self.lines) + "\n"
         with open(path, "w") as fh:

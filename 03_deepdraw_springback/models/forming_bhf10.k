@@ -65,8 +65,6 @@ $#   neiph     neips    maxint    strflg    sigflg    epsflg    rltflg    engflg
          0         0        -3         1         1         1         1         1
 $#  cmpflg    ieverp    beamip     dcomp      shge     stssz    n3thdt   ialemat
          0         1         0         1         2         3         2         1
-*INCLUDE
-mesh.k
 *PART
 blank DC04
 $#     pid     secid       mid     eosid      hgid      grav    adpopt      tmid
@@ -241,6 +239,8 @@ $#     sfs       sfm       sst       mst      sfst      sfmt       fsf       vsf
        1.0       1.0       0.0       0.0       1.0       1.0       1.0       1.0
 $#    soft    sofscl    lcidab    maxpar     sbopt     depth     bsort    frcfrq
          1       0.1         0     1.025       2.0         5         0         1
+*INCLUDE
+mesh.k
 *INTERFACE_SPRINGBACK_LSDYNA
 $#    psid      nshv     ftype    ftensr    nthhsv     rflag   intstrn      optc
         10         0         0         0         0         0         0
