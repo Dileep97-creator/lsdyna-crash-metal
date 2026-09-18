@@ -149,14 +149,20 @@ def add_gissmo(deck: Deck, mid: int, lcsdg: int, dmgexp=2.0, dcrit=0.4,
     MAT_024, because a constant failure strain is wrong for anything
     other than the one stress state it was fitted to.
     """
+    # EXCL is the "switched off" marker. Once EXCL is set, a criterion is
+    # disabled ONLY if its field holds the EXCL value - a 0.0 is a live
+    # criterion. Writing 0.0 here makes MNPRES = 0 active, every element
+    # satisfies "pressure <= 0" on the first cycle and the whole part is
+    # deleted before it touches anything (warning SOL+487 in messag).
+    X = -999.0
     deck.lines.append("*MAT_ADD_EROSION_TITLE")
     deck.lines.append(f"GISSMO damage for material {mid}")
     deck.cards((("mid", "excl", "mxpres", "mneps", "effeps", "voleps",
                   "numfip", "ncs"),
-                 (mid, -999.0, 0.0, 0.0, 0.0, 0.0, float(numfip), 1.0)),
+                 (mid, X, X, X, X, X, float(numfip), 1.0)),
             (("mnpres", "sigp1", "sigvm", "mxeps", "epssh", "sigth",
               "impulse", "failtm"),
-             (0.0,) * 8),
+             (X,) * 8),
             (("idam", "dmgtyp", "lcsdg", "ecrit", "dmgexp", "dcrit",
               "fadexp", "lcregd"),
              (1, 1.0, lcsdg, 0.0, dmgexp, dcrit, fadexp, lcregd)),

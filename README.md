@@ -17,6 +17,22 @@ Studies 02 and 04 are calibration workflows that end by writing the
 material cards studies 01 and 03 consume. If you only look at one, look
 at 02.
 
+### Headline result - crash box, 100 kg at 12 m/s
+
+![force vs crush](01_crashbox_axial/results/force_crush.png)
+
+| DP600, 5 mm mesh | peak [kN] | mean [kN] | CFE | SEA [kJ/kg] |
+|---|---|---|---|---|
+| t = 1.2 mm | 109 | 77 | 0.71 | 26.3 |
+| t = 1.5 mm | 154 | 106 | 0.69 | 29.0 |
+| t = 1.8 mm | 206 | 139 | 0.67 | 31.5 |
+
+All three pass the energy balance checks; 5 mm and 7.5 mm meshes agree on
+mean crush force within 0.5 %. The aluminium variant (2.5 mm AA6060-T6)
+absorbs the same energy at 55 kN mean force over 130 mm of stroke. Full
+table, mesh and material comparison and failure diagnoses in
+[study 01](01_crashbox_axial/).
+
 ## Why it is organised this way
 
 Most simulation portfolios are a set of screenshots. The intent here is
@@ -124,17 +140,20 @@ docs/                 verification checklist, modelling notes
 
 ## Status and honesty about the numbers
 
-The decks are generated, format-checked and mesh-quality-checked in CI.
-They have not been run on the solver in this repository, because LS-DYNA
-is a licensed code and no result files are committed. Each study's README
-has a results table with the metrics to fill in; run the models on your
-own licence and populate them.
+**Study 01 has been run** (LS-DYNA R16.1). Its README has the checked
+results table, the force-crush plot, and a short account of the three runs
+that failed first time and how each was diagnosed and fixed.
+Studies 02 and 04 run their calibration on the bundled data; study 03
+decks are generated and checked but not yet run. Solver output is not
+committed (see `.gitignore`) - `collect_results.py` rebuilds the tables
+from a run directory.
 
 The material data - flow curves, Lankford values, coupon failure strains,
 weld strengths - are representative published-range values for the named
 grades, included so that the pipeline runs end to end out of the box.
-They are labelled as placeholders everywhere they appear. Replace them
-with measured data before quoting any number as a material result.
+They are labelled as placeholders everywhere they appear. The simulated
+numbers therefore demonstrate the method, not the properties of any
+particular steel or aluminium sheet.
 
 ## Licence
 

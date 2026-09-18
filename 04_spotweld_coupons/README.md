@@ -65,6 +65,21 @@ NRS/NRR ratio    1.725
 an elliptical envelope would predict. Writes
 `results/mat100_spotweld.k` and `results/weld_envelope.png`.
 
+## Status of the coupon simulations
+
+The five decks have been run (6 ms, weld failure off). They do not yet
+give an envelope, and the fit above still comes from the placeholder
+test CSV:
+
+- No run reaches its peak - the weld force is still rising at 6 ms
+  (about 2.9 mm of pull). The termination time needs extending.
+- At 30-90 degrees the weld carries under 1 kN: the pull is going into
+  bending the free sheet, not into the joint. The coupon needs stiff
+  clamping of both sheets, as a KS-II holder provides.
+- At 0 degrees the swforc output puts most of the force in the "axial"
+  column. The beam orientation, or coupon rotation in lap shear, has to
+  be checked before the components are used for the fit.
+
 ## Using the result
 
 The calibrated card drops straight into a sub-assembly or full BIW model.

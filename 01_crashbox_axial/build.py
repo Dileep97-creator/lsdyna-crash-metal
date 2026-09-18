@@ -221,6 +221,16 @@ def write_case(h: float, t: float, grade: str, damage: bool) -> str:
     d.kw("SET_PART_LIST", (PSID_TUBE, 0.0, 0.0, 0.0, 0.0), (PID_TUBE,))
     d.kw("SET_PART_LIST", (PSID_IMP, 0.0, 0.0, 0.0, 0.0), (PID_IMP,))
 
+    # Contact formulation. The thick (2.5 mm) aluminium wall on a 5 mm mesh
+    # went unstable at 6.7 ms with SOFT=1: shells in the fold stacked up,
+    # the penalty stiffness shot up, the timestep collapsed and mass scaling
+    # added 10 % in 0.3 ms. Segment-based contact (SOFT=2) handles thick
+    # shells folding onto themselves far better and is the usual fix.
+    if grade.startswith("AA"):
+        soft_card = (2, 0.1, 0, 1.025, 3.0, 5, 0, 1)   # SOFT=2, SBOPT=3, DEPTH=5
+    else:
+        soft_card = (1, 0.1, 0, 1.025, 2.0, 2, 0, 1)
+
     d.lines.append("*CONTACT_AUTOMATIC_SINGLE_SURFACE_ID")
     d.lines.append(card(1) + "self contact of the folding tube")
     d.cards(
@@ -231,7 +241,7 @@ def write_case(h: float, t: float, grade: str, damage: bool) -> str:
         (("sfs", "sfm", "sst", "mst", "sfst", "sfmt", "fsf", "vsf"),
          (1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)),
         (("soft", "sofscl", "lcidab", "maxpar", "sbopt", "depth", "bsort", "frcfrq"),
-         (1, 0.1, 0, 1.025, 2.0, 2, 0, 1)))
+         soft_card))
 
     d.lines.append("*CONTACT_AUTOMATIC_SURFACE_TO_SURFACE_ID")
     d.lines.append(card(2) + "impactor to tube")
@@ -243,7 +253,7 @@ def write_case(h: float, t: float, grade: str, damage: bool) -> str:
         (("sfs", "sfm", "sst", "mst", "sfst", "sfmt", "fsf", "vsf"),
          (1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)),
         (("soft", "sofscl", "lcidab", "maxpar", "sbopt", "depth", "bsort", "frcfrq"),
-         (1, 0.1, 0, 1.025, 2.0, 2, 0, 1)))
+         soft_card))
 
     # the mesh is pulled in last, so that if an include ever misbehaves the
     # load case above it has already been read
